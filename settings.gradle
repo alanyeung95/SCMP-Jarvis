@@ -1,0 +1,2 @@
+include ':app', ':aars', ':pocketsphinx-android-5prealpha-release'
+rootProject.name='My Application'
