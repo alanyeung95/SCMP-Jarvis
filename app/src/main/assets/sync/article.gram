@@ -1,0 +1,21 @@
+#JSGF V1.0;
+
+grammar articles;
+
+<article> = headline  |
+          hong kong |
+          china |
+          technology |
+          section |
+          zero  |
+          one   |
+          two   |
+          three |
+          four  |
+          five  |
+          six   |
+          seven |
+          eight |
+          nine  ;
+
+public <articles> = <article>+;

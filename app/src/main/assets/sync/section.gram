@@ -1,0 +1,11 @@
+#JSGF V1.0;
+
+grammar sections;
+
+<section> = headline  |
+          hong kong |
+          china |
+          technology |
+          section;
+
+public <sections> = <section>+;
