@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.hongkong;
 
 import android.os.Bundle;
+import android.text.SpannableStringBuilder;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,23 +35,29 @@ public class HongKongFragment extends Fragment {
         final TextView textView = root.findViewById(R.id.text_hong_kong);
 
         if (getArguments() != null) {
-            textView.setText(getArguments().getString("news"));
-            String text = "Student shot and man set ablaze in one of Hong Kong’s most " +
-                    "violent days of unrest yetTear gas, petrol bombs, barricades and pepper " +
-                    "spray across multiple districts after protesters cause traffic mayhem in " +
-                    "attempt to spark general strikeCity chief warns anyone who believes violence " +
-                    "will force her government to give in to their political demands that they are" +
-                    " indulging in ‘wishful thinking’";
+            if (getArguments().getString("state").equals("STATE_READING_ONE_NEWS") || getArguments().getString("state").equals("STATE_READING_ALL_NEWS")){
+                Log.e("hkong fragment", "creating");
+                String text="";
+                text = getArguments().getString("newsTitle"  ) + "\n\n" + getArguments().getString("newsContent" )+ "\n";
+                SpannableStringBuilder str = new SpannableStringBuilder(text);
+                textView.setText(str);
+                textView.setMovementMethod(new ScrollingMovementMethod());
+            }else{
 
-            //f//romBundle(arguments).noteId
-            //getArguments().getString("123")
-            //textView.setText(text + text + text);
-            textView.setMovementMethod(new ScrollingMovementMethod());
-            //}
-            //MainActivity.class.
+                String text="";
+
+                int numberOfNews = getArguments().getInt("newsLength");
+                for (int i=0;i<numberOfNews;i++){
+                    text = text + "(Speak \"" + (i+1) +"\")\n" + getArguments().getString("newsTitle" + i)+ "\n\n";
+                    //text = text + getArguments().getString("newsContent" + i)+ "\n\n";
+                }
+                SpannableStringBuilder str = new SpannableStringBuilder(text);
+
+                textView.setText(str);
+                textView.setMovementMethod(new ScrollingMovementMethod());
+            }
         }
             return root;
-
     }
 
     public static HongKongFragment newInstance(String text) {

@@ -1,6 +1,9 @@
 package com.example.myapplication;
 
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -10,6 +13,9 @@ import com.example.myapplication.ui.hongkong.HongKongFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import android.os.Handler;
+import android.os.Message;
+import android.speech.tts.Voice;
 import android.view.Gravity;
 import android.view.View;
 
@@ -38,6 +44,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 
 import android.Manifest;
@@ -45,12 +52,14 @@ import android.content.pm.PackageManager;
 
 import androidx.core.content.ContextCompat;
 import androidx.core.app.ActivityCompat;
-import 	androidx.navigation.NavDestination;
+import androidx.navigation.NavDestination;
+
 import android.view.MenuItem;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Queue;
+import java.util.Set;
 
 import edu.cmu.pocketsphinx.Assets;
 import edu.cmu.pocketsphinx.SpeechRecognizer;
@@ -76,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements
     TextView hongKongTextView;
     NavigationView navigationView;
     NavController navController;
+    Handler handler;
 
     // constant
     private static final String KWS_SEARCH = "wake up";
@@ -105,25 +115,29 @@ public class MainActivity extends AppCompatActivity implements
     private static final String STATE_WAITING_SECTION = "STATE_WAITING_SECTION";
     private static final String STATE_WAITING_ARTICLE = "STATE_WAITING_ARTICLE";
     private static final String STATE_READING_ONE_NEWS = "STATE_READING_ONE_NEWS";
+    private static final String STATE_READING_ALL_NEWS = "STATE_READING_ALL_NEWS";
     private static final String STATE_WAITING = "WAITING";
+    private static final String STATE_SHUTDOWN = "STATE_SHUTDOWN";
 
 
     // variable
     String currentSection = null;
+    int currentNewID = -1;
     HashMap<String, News[]> news;
     SpeakerTasks speakTasks;
     String state;
+    float speechSpeed = 0.8f;
 
     boolean isHeadline = false; //hoi
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        if (savedInstanceState==null){
+
+        if (savedInstanceState == null) {
             savedInstanceState = new Bundle();
             savedInstanceState.putFloat("123", 456);
         }
-
 
         state = STATE_INITIAL;
         news = News.getNews();
@@ -143,27 +157,24 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onClick(View view) {
                 /**
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                 .setAction("Action", null).show();
                  **/
+
                 /**
-                addSpeakTask("Yes sir");
-                state = STATE_WAITING;
-                drawer.openDrawer(Gravity.LEFT );
+                 addSpeakTask("Yes sir");
+                 state = STATE_WAITING;
+                 drawer.openDrawer(Gravity.LEFT );
                  **/
-               // navigationView.getMenu().getItem(0).setChecked(true);
-             // navController.navigate(R.id.nav_hong_kong);
+                // navigationView.getMenu().getItem(0).setChecked(true);
+                // navController.navigate(R.id.nav_hong_kong);
 
                 // TextView textView = findViewById(R.id.text_hong_kong);
                 // if (textView!=null ) textView.setText("S123123");
 
                 //getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, HongKongFragment.newInstance("123")).commit();
 
-                Bundle args = new Bundle();
-                args.putString("link","1");
-                args.putString("news","1123123123123");
-                args.putString("news2","oikok");
-                navController.navigate(R.id.nav_hong_kong, args);
+
             }
         });
 
@@ -171,35 +182,45 @@ public class MainActivity extends AppCompatActivity implements
         fab2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                 textToSpeech.stop();
+
+/**
+ Set<String> a=new HashSet<>();
+ a.add("male");//here you can give male if you want to select male voice.
+ Voice v= null;
+ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+ Log.e("fab", "setting");
+ v = new Voice("en-us-x-sfg#female_2-local",new Locale("en","US"),400,200,true,a);
+ }
+ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+ textToSpeech.setVoice(v);
+ }
+ speak("texting haha dsfsdf dsfsdf ");
+
+ HashMap<String, String> onlineSpeech = new HashMap<>();
+ onlineSpeech.put(TextToSpeech.Engine.KEY_FEATURE_NETWORK_SYNTHESIS, "true");
+
+
+ if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+ Set<String> a=new HashSet<>();
+ a.add("female");//here you can give male if you want to select mail voice.
+ Voice  v = new Voice(" en-US-Standard-C",new Locale("en","US"),400,200,true, a);
+ textToSpeech.setVoice(v);
+ }
+ textToSpeech.speak("texting testing", TextToSpeech.QUEUE_FLUSH, onlineSpeech);
+ https://stackoverflow.com/questions/9815245/android-text-to-speech-male-voice/31207383
+ **/
+
+                // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                //     finishAndRemoveTask();
+                // }
+
+                shutingDown();
             }
         });
 
 
-
         drawer = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
-
-       /**
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(MenuItem item) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, HongKongFragment.newInstance("123")).commit();
-                drawer.closeDrawer(Gravity.LEFT);
-                return true;
-            }
-        }); //hoi
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
-                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment,
-                new HomeFragment()).commit();
-        navigationView.setCheckedItem(R.id.nav_home);
-        **/
-
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -212,17 +233,42 @@ public class MainActivity extends AppCompatActivity implements
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-        /**
-         navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
-        @Override
-        public void onDestinationChanged(NavController navController, NavDestination destination, Bundle arguments) {
-        if (hongKongTextView != null)
-        Log.e("TTS", hongKongTextView.getText().toString());
-        // hongKongTextView.getText();
-        }
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                selectNavigationBar(item.getItemId());
+                /**
+                 News[] sectionNews = news.get(getSectionByFragmentID(item.getItemId()));
+                 Bundle args = new Bundle();
+                 args.putInt("newsLength", sectionNews.length);
+                 for (int i = 0; i < sectionNews.length; i++) {
+                 args.putString("newsTitle" + i, sectionNews[i].getTitle());
+                 args.putString("newsContent" + i, sectionNews[i].getContent());
+                 }
+                 navController.navigate(item.getItemId(), args);
+                 drawer.closeDrawer(Gravity.LEFT);
+                 */
+                return true;
+            }
         });
-         **/
 
+        handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+
+                News[] sectionNews = news.get(currentSection);
+                Bundle args = new Bundle();
+                args.putString("state", state);
+                args.putString("newsTitle", sectionNews[currentNewID].getTitle());
+                args.putString("newsContent", sectionNews[currentNewID].getContent());
+
+                navController.navigate(utils.getFragmentIDBySection(currentSection), args);
+                drawer.closeDrawer(Gravity.LEFT);
+            }
+        };
+
+
+        // BACKEND STUFF
         // Init TextToSpeech
         textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
@@ -234,12 +280,12 @@ public class MainActivity extends AppCompatActivity implements
                         Toast.makeText(getApplicationContext(), "This language is not supported!",
                                 Toast.LENGTH_SHORT);
                     } else {
-                        textToSpeech.setPitch(0.6f);
-                        textToSpeech.setSpeechRate(0.8f);
+                        textToSpeech.setPitch(1.0f);
+                        textToSpeech.setSpeechRate(speechSpeed);
                     }
                 }
             }
-        });
+        }, "com.google.android.tts");
         textToSpeech.setOnUtteranceProgressListener(new ttsUtteranceListener());
 
         // Prepare the data for UI
@@ -260,7 +306,7 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-
+    // ========================================================== Start Text2Speak ==========================================================
     @Override
     public void onBeginningOfSpeech() {
     }
@@ -270,14 +316,16 @@ public class MainActivity extends AppCompatActivity implements
         if (!recognizer.getSearchName().equals(KWS_SEARCH))
             switchSearch(KWS_SEARCH);
     }
+    // ========================================================== End Text2Speak ==========================================================
 
+    // ========================================================== Start Text2Speak ==========================================================
     private void switchSearch(String searchName) {
         recognizer.stop();
 
         // If we are not spotting, start listening with timeout (10000 ms or 10 seconds).
         if (searchName.equals(KWS_SEARCH)) {
             Log.e("TTS", "jarvis here");
-           // if (homeTextView != null) homeTextView.setText("Say \"Jarvis\" to start!");
+            // if (homeTextView != null) homeTextView.setText("Say \"Jarvis\" to start!");
 
             recognizer.startListening(searchName);
         } else
@@ -293,21 +341,28 @@ public class MainActivity extends AppCompatActivity implements
 
         String text = hypothesis.getHypstr();
 
-        Log.e("TTS", "hypothesis: " + text);
 
         // filter other useless words
         if (text.contains(KEYPHRASE)) {
             text = KEYPHRASE;
+        } else if (text.contains("section")) {
+            text = "section";
         } else if (text.contains(HEADLINE_SECTION)) {
             text = HEADLINE_SECTION;
-        } else if (text.contains(HONGKONG_SECTION)) {
+        } else if (text.contains(HONGKONG_SECTION) || text.contains("hong")) {
             text = HONGKONG_SECTION;
         } else if (text.contains(CHINA_SECTION)) {
             text = CHINA_SECTION;
         } else if (text.contains(TECHNOLOGY_SECTION)) {
             text = TECHNOLOGY_SECTION;
-        } else if (text.contains("section")) {
-            text = "section";
+        } else if (text.contains("next")) {
+            text = "next";
+        } else if (text.contains("previous")) {
+            text = "previous";
+        } else if (text.contains("faster")) {
+            text = "faster";
+        } else if (text.contains("slower")) {
+            text = "slower";
         } else if (text.contains("one")) {
             text = "one";
         } else if (text.contains("two")) {
@@ -315,6 +370,13 @@ public class MainActivity extends AppCompatActivity implements
         } else if (text.contains("three")) {
             text = "three";
         }
+
+
+        if (text.contains("bye")) {
+            Log.e("qwer", "good bye");
+            shutingDown();
+        }
+
 
         if (text.contains(KEYPHRASE)) {
             recognizer.stop();
@@ -326,59 +388,65 @@ public class MainActivity extends AppCompatActivity implements
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                addSpeakTask("Yes sir");
+                addSpeakTask(new SpeakerTask(false, "", -1, "Yes sir"));
                 if (state == STATE_INITIAL) state = STATE_WAITING_SECTION;
                 else state = STATE_WAITING;
             } else {
-                addSpeakTask("Yes sir");
+                addSpeakTask(new SpeakerTask(false, "", -1, "Yes sir"));
                 if (state == STATE_INITIAL) state = STATE_WAITING_SECTION;
                 else state = STATE_WAITING;
             }
             return;
         }
 
-        if (state == STATE_WAITING_SECTION){
+        if (state == STATE_WAITING_SECTION) {
             if (text.contains("section")) {
                 drawer.openDrawer(Gravity.LEFT);
-                addSpeakTask("Which selection you want to read?");
-            }else if (text.contains(HEADLINE_SECTION) | text.contains(HONGKONG_SECTION) | text.contains(CHINA_SECTION) | text.contains(TECHNOLOGY_SECTION)) {
                 recognizer.stop();
-                state =STATE_WAITING_ARTICLE;
+                addSpeakTask(new SpeakerTask(false, "", -1, "Which selection you want to read?"));
+            } else if (text.contains(HEADLINE_SECTION) | text.contains(HONGKONG_SECTION) | text.contains(CHINA_SECTION) | text.contains(TECHNOLOGY_SECTION)) {
+                recognizer.stop();
+                state = STATE_WAITING_ARTICLE;
+                Log.e("asdf", "hong");
                 handleSection(text);
             }
             return;
         }
 
-        if (text.contains("section")) {
-            drawer.openDrawer(Gravity.LEFT );
-            addSpeakTask("Which selection you want to read?");
-            state = STATE_WAITING;
-
-        } else if (text.equals("stop")) {
-            // hoi  textToSpeech.stop();
-            switchSearch(ARTICLE_SEARCH);
-        } else if (text.contains("one") | text.contains("two") | text.contains("three")) {
-            //switchSearch(KWS_SEARCH );
-            if (currentSection==null){
-                return;
-            }
-            state = STATE_READING_ONE_NEWS;
+        if (text.equals("faster")){
+            speechSpeed+=0.3f;
+            textToSpeech.setSpeechRate(speechSpeed);
             recognizer.stop();
-            int value = utils.convertStringToInt(text);
-            if (value > news.get(currentSection).length){
-                addSpeakTask("Invalid command, as the number of news is "+ news.get(currentSection).length + " only");
-                return;
-            }
-
-            Log.e("TTS", "conversion result" + value);
-            addSpeakTask("Title");
-            addSpeakTask(news.get(currentSection)[value- 1].getTitle());
-            addSpeakTask("Content");
-            addSpeakTask(news.get(currentSection)[value - 1].getContent());
-
+            addSpeakTask(new SpeakerTask(false, "", -1, "testing tone speed"));
+            return;
         }
 
-        else if (text.equals(PHONE_SEARCH)) {
+        if (text.equals("slower")){
+            speechSpeed-=0.3f;
+            textToSpeech.setSpeechRate(speechSpeed);
+            addSpeakTask(new SpeakerTask(false, "", -1, "testing tone speed"));
+            return;
+        }
+
+        if (text.contains("section")) {
+            drawer.openDrawer(Gravity.LEFT);
+            recognizer.stop();
+            addSpeakTask(new SpeakerTask(false, "", -1, "Which selection you want to read?"));
+            state = STATE_WAITING;
+        }
+        else if (text.equals("all")) {
+            recognizer.stop();
+            state = STATE_READING_ALL_NEWS;
+            addSpeakTask(new SpeakerTask(false, "", -1, "Reading all " + currentSection + " news for you"));
+            for (int i = 0; i < news.get(currentSection).length; i++) {
+                addSpeakTask(new SpeakerTask(true, currentSection, i, "Title"));
+                addSpeakTask(new SpeakerTask(true, currentSection, i, news.get(currentSection)[i].getTitle()));
+                addSpeakTask(new SpeakerTask(true, currentSection, i, "Content"));
+                addSpeakTask(new SpeakerTask(true, currentSection, i, news.get(currentSection)[i].getContent()));
+            }
+
+
+        } else if (text.equals(PHONE_SEARCH)) {
             Log.e("TTS", "time to phone");
             switchSearch(MENU_SEARCH);
             // switchSearch(PHONE_SEARCH);
@@ -392,17 +460,48 @@ public class MainActivity extends AppCompatActivity implements
             switchSearch(ARTICLE_SEARCH);
             Log.e("TTS", text);
         }
-    }
 
+        Log.e("TTS", "hypothesis: " + text);
+
+    }
+    // ========================================================== End Text2Speak ==========================================================
+
+    // ========================================================== Start Business Logic ==========================================================
     void handleSection(String section) {
         currentSection = section;
         News[] sectionNews = news.get(section);
+
         navigationView.getMenu().getItem(0).setChecked(true);
 
-        speak("There are " + sectionNews.length + " news in " + section + " section. Which one you want me to read?");
+        int fragmentID = utils.getFragmentIDBySection(section);
 
+        selectNavigationBar(fragmentID);
+        /**
+         Bundle args = new Bundle();
+         args.putInt("newsLength", sectionNews.length);
+         for (int i = 0; i < sectionNews.length; i++) {
+         args.putString("newsTitle" + i, sectionNews[i].getTitle());
+         args.putString("newsContent" + i, sectionNews[i].getContent());
+         }
+         navController.navigate(fragmentID, args);
+         drawer.closeDrawer(Gravity.LEFT);
+         **/
+        speak("There are " + sectionNews.length + " news in " + section + " section. Which one you want me to read?");
     }
 
+    // ========================================================== End Business Logic ==========================================================
+    public void selectNavigationBar(int destID) {
+        News[] sectionNews = news.get(utils.getSectionByFragmentID(destID));
+        Bundle args = new Bundle();
+        args.putInt("newsLength", sectionNews.length);
+        args.putString("state", state);
+        for (int i = 0; i < sectionNews.length; i++) {
+            args.putString("newsTitle" + i, sectionNews[i].getTitle());
+            args.putString("newsContent" + i, sectionNews[i].getContent());
+        }
+        navController.navigate(destID, args);
+        drawer.closeDrawer(Gravity.LEFT);
+    }
 
     private void runRecognizerSetup() {
         // Recognizer initialization is a time-consuming and it involves IO,
@@ -484,7 +583,97 @@ public class MainActivity extends AppCompatActivity implements
         if (hypothesis != null) {
             String text = hypothesis.getHypstr();
             Log.e("TTS", text);
+
+            if (state==STATE_READING_ONE_NEWS && (text.contains("next") || text.contains("previous"))) {
+                recognizer.stop();
+                if (text.contains("next")) {
+                    if (currentNewID + 1 > news.get(currentSection).length - 1) {
+                        addSpeakTask(new SpeakerTask(false, currentSection, -1, "Sorry, this is the last news"));
+                        return;
+                    }
+                    currentNewID++;
+                } else {
+                    if (currentNewID - 1 < 0) {
+                        addSpeakTask(new SpeakerTask(false, currentSection, -1, "Sorry, this is the first news"));
+                        return;
+                    }
+                    currentNewID--;
+                }
+
+                addSpeakTask(new SpeakerTask(false, "", -1, "Title"));
+                addSpeakTask(new SpeakerTask(false, "", -1, news.get(currentSection)[currentNewID].getTitle()));
+                addSpeakTask(new SpeakerTask(false, "", -1, "Content"));
+                addSpeakTask(new SpeakerTask(false, "", -1, news.get(currentSection)[currentNewID].getContent()));
+
+                News[] sectionNews = news.get(currentSection);
+                Bundle args = new Bundle();
+                args.putString("state", state);
+                args.putString("newsTitle", sectionNews[currentNewID].getTitle());
+                args.putString("newsContent", sectionNews[currentNewID].getContent());
+
+                navController.navigate(utils.getFragmentIDBySection(currentSection), args);
+                drawer.closeDrawer(Gravity.LEFT);
+                return;
+            }
+
+            if (text.equals("faster")){
+                speechSpeed+=0.3f;
+                textToSpeech.setSpeechRate(speechSpeed);
+                recognizer.stop();
+                addSpeakTask(new SpeakerTask(false, "", -1, "testing tone speed"));
+                return;
+            }
+
+            if (text.equals("slower")){
+                speechSpeed-=0.3f;
+                textToSpeech.setSpeechRate(speechSpeed);
+                addSpeakTask(new SpeakerTask(false, "", -1, "testing tone speed"));
+                return;
+            }
+
+
+            if (text.contains("one") | text.contains("two") | text.contains("three")) {
+
+                //switchSearch(KWS_SEARCH );
+                if (currentSection == null) {
+                    return;
+                }
+                state = STATE_READING_ONE_NEWS;
+                currentNewID = utils.convertStringToInt(text) - 1;
+
+                recognizer.stop();
+                int value = utils.convertStringToInt(text);
+                if (value > news.get(currentSection).length) {
+                    addSpeakTask(new SpeakerTask(false, "", -1, "Invalid command, as the number of news is " + news.get(currentSection).length + " only"));
+                    return;
+                }
+
+                Log.e("TTS", "conversion result" + value);
+                addSpeakTask(new SpeakerTask(false, "", -1, "Title"));
+                addSpeakTask(new SpeakerTask(false, "", -1, news.get(currentSection)[value - 1].getTitle()));
+                addSpeakTask(new SpeakerTask(false, "", -1, "Content"));
+                addSpeakTask(new SpeakerTask(false, "", -1, news.get(currentSection)[value - 1].getContent()));
+
+                News[] sectionNews = news.get(currentSection);
+                Bundle args = new Bundle();
+                args.putString("state", state);
+                args.putString("newsTitle", sectionNews[currentNewID].getTitle());
+                args.putString("newsContent", sectionNews[currentNewID].getContent());
+
+                navController.navigate(utils.getFragmentIDBySection(currentSection), args);
+                drawer.closeDrawer(Gravity.LEFT);
+
+            }
+
+            if (text.contains("bye")) {
+                Log.e("qwer", "good bye");
+                shutingDown();
+            }
+
+
+            Log.e("TTS", text);
         }
+
     }
 
     protected void onDestroy() {
@@ -498,7 +687,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main , menu);
+        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
@@ -518,12 +707,11 @@ public class MainActivity extends AppCompatActivity implements
         Log.e("TTS", error.getMessage());
     }
 
-
     // =========================================================== text2speak
-    private void addSpeakTask(String text) {
-        speakTasks.addTask(text);
+    private void addSpeakTask(SpeakerTask task) {
+        speakTasks.addTask(task);
         if (!textToSpeech.isSpeaking()) {
-            speak(speakTasks.getTask());
+            speak(speakTasks.getTask().getText());
         }
     }
 
@@ -535,7 +723,7 @@ public class MainActivity extends AppCompatActivity implements
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Bundle params = new Bundle();
             params.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, 1.0f);
-            textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "UniqueID");
+            textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, params, "UniqueID");
         } else {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put(TextToSpeech.Engine.KEY_PARAM_VOLUME, "1.0");
@@ -552,17 +740,39 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public void onDone(String utteranceId) {
             if (speakTasks.getTaskCount() > 0) {
-                if (textToSpeech.isSpeaking()){
-                    //textToSpeech.stop();
-                }
-                speak(speakTasks.getTask());
+                //if (textToSpeech.isSpeaking()) {
+                //textToSpeech.stop();
+                //}
+                if (state.equals(STATE_READING_ALL_NEWS)) {
+                    SpeakerTask task = speakTasks.getTask();
+                    if (task.getNewsIndex() != currentNewID | task.getSection() != currentSection) {
+                        currentNewID = task.getNewsIndex();
+                        currentSection = task.getSection();
+
+                        /**
+                         News[] sectionNews = news.get(currentSection);
+                         Bundle args = new Bundle();
+                         args.putString("state", state);
+                         args.putString("newsTitle", sectionNews[currentNewID ].getTitle());
+                         args.putString("newsContent", sectionNews[currentNewID ].getContent());
+
+                         navController.navigate(utils.getFragmentIDBySection(currentSection), args);
+                         drawer.closeDrawer(Gravity.LEFT);
+                         **/
+                        handler.sendEmptyMessage(0);
+                        //Bundle args = new Bundle();
+                        //navController.navigate(utils.getFragmentIDBySection(currentSection), args);
+                    }
+                    speak(speakTasks.getTask().getText());
+                } else speak(speakTasks.getTask().getText());
             } else {
-                if (state == STATE_WAITING_SECTION | state == STATE_WAITING ){
+                if (state ==STATE_SHUTDOWN) {
+                    shutDown();
+                } else if (state == STATE_WAITING_SECTION | state == STATE_WAITING) {
                     switchSearch(SECTION_SEARCH);
-                }
-                else if (state == STATE_READING_ONE_NEWS  | state ==  STATE_WAITING_ARTICLE)
+                } else if (state == STATE_READING_ONE_NEWS | state == STATE_WAITING_ARTICLE)
                     switchSearch(ARTICLE_SEARCH);
-                else{
+                else {
                     Log.e("TTS", "onDone" + state);
 
                 }
@@ -571,12 +781,40 @@ public class MainActivity extends AppCompatActivity implements
 
         @Override
         public void onError(String utteranceId) {
-
         }
     }
 
-    public HashMap<String, News[]> getNews(){
-        return news;
+    public void shutingDown() {
+        addSpeakTask(new SpeakerTask(false, "", -1, "Goodbye, see you tomorrow!"));
+        Log.e("123","adding task");
+        state = STATE_SHUTDOWN;
     }
 
+    public void shutDown() {
+
+        DevicePolicyManager deviceManger;
+        ComponentName compName;
+        compName = new ComponentName(this, MainActivity.class);
+        deviceManger = (DevicePolicyManager) getSystemService(
+                Context.DEVICE_POLICY_SERVICE);
+
+        Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+        ComponentName mComponentName = new ComponentName(this, MainActivity.class);
+        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, mComponentName);
+        final String description = "Some Description About Your Admin";
+        intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, description);
+        final int ADMIN_INTENT = 15;
+        startActivityForResult(intent, ADMIN_INTENT);
+
+        boolean active = deviceManger.isAdminActive(compName);
+        if (active) {
+            deviceManger.lockNow();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                finishAndRemoveTask();
+            }
+
+        } else {
+            Log.e("asdf", "caannot lock");
+        }
+    }
 }

@@ -2,10 +2,11 @@
 
 grammar sections;
 
-<section> = headline  |
+<section> =
+section|
+headline  |
           hong kong |
           china |
-          technology |
-          section;
+          technology ;
 
 public <sections> = <section>+;

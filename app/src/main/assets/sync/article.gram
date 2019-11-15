@@ -7,7 +7,11 @@ grammar articles;
           china |
           technology |
           section |
-          zero  |
+          all |
+          next |
+          previous |
+          faster |
+          slower |
           one   |
           two   |
           three |
@@ -16,6 +20,7 @@ grammar articles;
           six   |
           seven |
           eight |
-          nine  ;
+          nine  |
+          good bye;
 
 public <articles> = <article>+;

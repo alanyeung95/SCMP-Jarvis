@@ -18,7 +18,7 @@
         tools:layout="@layout/fragment_hong_kong">
         <argument
             android:name="news"
-            android:defaultValue="popo12"
+            android:defaultValue="pi"
             />
     </fragment>
 
