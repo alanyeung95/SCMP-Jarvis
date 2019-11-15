@@ -4,6 +4,8 @@ import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -86,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements
     NavigationView navigationView;
     NavController navController;
     Handler handler;
+    MediaPlayer player;
 
     // constant
     private static final String KWS_SEARCH = "wake up";
@@ -118,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final String STATE_READING_ALL_NEWS = "STATE_READING_ALL_NEWS";
     private static final String STATE_WAITING = "WAITING";
     private static final String STATE_SHUTDOWN = "STATE_SHUTDOWN";
+    private static final String  STATE_ADVERTISING = "STATE_ADVERTISING";
 
 
     // variable
@@ -126,9 +130,13 @@ public class MainActivity extends AppCompatActivity implements
     HashMap<String, News[]> news;
     SpeakerTasks speakTasks;
     String state;
+    String previousState;
     float speechSpeed = 0.8f;
+    boolean advertismentEnable = true;
+    int advertismentCount = 0;
+    int advertismentQuota = 1;
 
-    boolean isHeadline = false; //hoi
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -214,7 +222,22 @@ public class MainActivity extends AppCompatActivity implements
                 //     finishAndRemoveTask();
                 // }
 
-                shutingDown();
+                //shutingDown();
+               // MediaPlayer mPlayer = new MediaPlayer();
+               // MediaPlayer mPlayer =  MediaPlayer.create(getApplicationContext(),getResources().getIdentifier("file_example_MP3_1MG", "mp3", getPackageName()));
+               // mPlayer.start();
+
+              //  try {
+                    // mPlayer.setDataSource( Uri.parse("https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_1MG.mp3"));
+                    //player.start();
+             //   } catch (IOException e) {
+                //    e.printStackTrace();
+               // }
+
+                if(player != null){
+                    player.start();
+                }
+
             }
         });
 
@@ -303,6 +326,20 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         runRecognizerSetup();
+        player = new MediaPlayer();
+        try {
+            player.setDataSource("/mnt/sdcard/Download/ads2.mp3");
+            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                public void onCompletion(MediaPlayer mp) {
+                    state = previousState;
+                    addSpeakTask(new SpeakerTask("", "", -1, ""));
+                }
+            });
+            player.prepareAsync();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
     }
 
@@ -388,11 +425,11 @@ public class MainActivity extends AppCompatActivity implements
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                addSpeakTask(new SpeakerTask(false, "", -1, "Yes sir"));
+                addSpeakTask(new SpeakerTask("", "", -1, "Yes sir"));
                 if (state == STATE_INITIAL) state = STATE_WAITING_SECTION;
                 else state = STATE_WAITING;
             } else {
-                addSpeakTask(new SpeakerTask(false, "", -1, "Yes sir"));
+                addSpeakTask(new SpeakerTask("", "", -1, "Yes sir"));
                 if (state == STATE_INITIAL) state = STATE_WAITING_SECTION;
                 else state = STATE_WAITING;
             }
@@ -403,7 +440,7 @@ public class MainActivity extends AppCompatActivity implements
             if (text.contains("section")) {
                 drawer.openDrawer(Gravity.LEFT);
                 recognizer.stop();
-                addSpeakTask(new SpeakerTask(false, "", -1, "Which selection you want to read?"));
+                addSpeakTask(new SpeakerTask("", "", -1, "Which selection you want to read?"));
             } else if (text.contains(HEADLINE_SECTION) | text.contains(HONGKONG_SECTION) | text.contains(CHINA_SECTION) | text.contains(TECHNOLOGY_SECTION)) {
                 recognizer.stop();
                 state = STATE_WAITING_ARTICLE;
@@ -417,32 +454,32 @@ public class MainActivity extends AppCompatActivity implements
             speechSpeed+=0.3f;
             textToSpeech.setSpeechRate(speechSpeed);
             recognizer.stop();
-            addSpeakTask(new SpeakerTask(false, "", -1, "testing tone speed"));
+            addSpeakTask(new SpeakerTask("", "", -1, "testing tone speed"));
             return;
         }
 
         if (text.equals("slower")){
             speechSpeed-=0.3f;
             textToSpeech.setSpeechRate(speechSpeed);
-            addSpeakTask(new SpeakerTask(false, "", -1, "testing tone speed"));
+            addSpeakTask(new SpeakerTask("", "", -1, "testing tone speed"));
             return;
         }
 
         if (text.contains("section")) {
             drawer.openDrawer(Gravity.LEFT);
             recognizer.stop();
-            addSpeakTask(new SpeakerTask(false, "", -1, "Which selection you want to read?"));
+            addSpeakTask(new SpeakerTask("", "", -1, "Which selection you want to read?"));
             state = STATE_WAITING;
         }
         else if (text.equals("all")) {
             recognizer.stop();
             state = STATE_READING_ALL_NEWS;
-            addSpeakTask(new SpeakerTask(false, "", -1, "Reading all " + currentSection + " news for you"));
+            addSpeakTask(new SpeakerTask("", "", -1, "Reading all " + currentSection + " news for you"));
             for (int i = 0; i < news.get(currentSection).length; i++) {
-                addSpeakTask(new SpeakerTask(true, currentSection, i, "Title"));
-                addSpeakTask(new SpeakerTask(true, currentSection, i, news.get(currentSection)[i].getTitle()));
-                addSpeakTask(new SpeakerTask(true, currentSection, i, "Content"));
-                addSpeakTask(new SpeakerTask(true, currentSection, i, news.get(currentSection)[i].getContent()));
+                addSpeakTask(new SpeakerTask("", currentSection, i, "Title"));
+                addSpeakTask(new SpeakerTask("", currentSection, i, news.get(currentSection)[i].getTitle()));
+                addSpeakTask(new SpeakerTask("", currentSection, i, "Content"));
+                addSpeakTask(new SpeakerTask("news", currentSection, i, news.get(currentSection)[i].getContent()));
             }
 
 
@@ -588,22 +625,22 @@ public class MainActivity extends AppCompatActivity implements
                 recognizer.stop();
                 if (text.contains("next")) {
                     if (currentNewID + 1 > news.get(currentSection).length - 1) {
-                        addSpeakTask(new SpeakerTask(false, currentSection, -1, "Sorry, this is the last news"));
+                        addSpeakTask(new SpeakerTask("", currentSection, -1, "Sorry, this is the last news"));
                         return;
                     }
                     currentNewID++;
                 } else {
                     if (currentNewID - 1 < 0) {
-                        addSpeakTask(new SpeakerTask(false, currentSection, -1, "Sorry, this is the first news"));
+                        addSpeakTask(new SpeakerTask("", currentSection, -1, "Sorry, this is the first news"));
                         return;
                     }
                     currentNewID--;
                 }
 
-                addSpeakTask(new SpeakerTask(false, "", -1, "Title"));
-                addSpeakTask(new SpeakerTask(false, "", -1, news.get(currentSection)[currentNewID].getTitle()));
-                addSpeakTask(new SpeakerTask(false, "", -1, "Content"));
-                addSpeakTask(new SpeakerTask(false, "", -1, news.get(currentSection)[currentNewID].getContent()));
+                addSpeakTask(new SpeakerTask("", "", -1, "Title"));
+                addSpeakTask(new SpeakerTask("", "", -1, news.get(currentSection)[currentNewID].getTitle()));
+                addSpeakTask(new SpeakerTask("", "", -1, "Content"));
+                addSpeakTask(new SpeakerTask("news", "", -1, news.get(currentSection)[currentNewID].getContent()));
 
                 News[] sectionNews = news.get(currentSection);
                 Bundle args = new Bundle();
@@ -620,14 +657,14 @@ public class MainActivity extends AppCompatActivity implements
                 speechSpeed+=0.3f;
                 textToSpeech.setSpeechRate(speechSpeed);
                 recognizer.stop();
-                addSpeakTask(new SpeakerTask(false, "", -1, "testing tone speed"));
+                addSpeakTask(new SpeakerTask("", "", -1, "testing tone speed"));
                 return;
             }
 
             if (text.equals("slower")){
                 speechSpeed-=0.3f;
                 textToSpeech.setSpeechRate(speechSpeed);
-                addSpeakTask(new SpeakerTask(false, "", -1, "testing tone speed"));
+                addSpeakTask(new SpeakerTask("", "", -1, "testing tone speed"));
                 return;
             }
 
@@ -644,15 +681,15 @@ public class MainActivity extends AppCompatActivity implements
                 recognizer.stop();
                 int value = utils.convertStringToInt(text);
                 if (value > news.get(currentSection).length) {
-                    addSpeakTask(new SpeakerTask(false, "", -1, "Invalid command, as the number of news is " + news.get(currentSection).length + " only"));
+                    addSpeakTask(new SpeakerTask("", "", -1, "Invalid command, as the number of news is " + news.get(currentSection).length + " only"));
                     return;
                 }
 
                 Log.e("TTS", "conversion result" + value);
-                addSpeakTask(new SpeakerTask(false, "", -1, "Title"));
-                addSpeakTask(new SpeakerTask(false, "", -1, news.get(currentSection)[value - 1].getTitle()));
-                addSpeakTask(new SpeakerTask(false, "", -1, "Content"));
-                addSpeakTask(new SpeakerTask(false, "", -1, news.get(currentSection)[value - 1].getContent()));
+                addSpeakTask(new SpeakerTask("", "", -1, "Title"));
+                addSpeakTask(new SpeakerTask("", "", -1, news.get(currentSection)[value - 1].getTitle()));
+                addSpeakTask(new SpeakerTask("", "", -1, "Content"));
+                addSpeakTask(new SpeakerTask("news", "", -1, news.get(currentSection)[value - 1].getContent()));
 
                 News[] sectionNews = news.get(currentSection);
                 Bundle args = new Bundle();
@@ -713,13 +750,17 @@ public class MainActivity extends AppCompatActivity implements
         if (!textToSpeech.isSpeaking()) {
             speak(speakTasks.getTask().getText());
         }
+        if (task.getType().equals("news") && advertismentEnable){
+            advertismentCount +=1;
+            if (advertismentCount>=advertismentQuota){
+                speakTasks.addTask(new SpeakerTask("ads", currentSection,currentNewID,"advertisement time"));
+            }
+        }
     }
 
     private void speak(String text) {
         //recognizer.startListening(KEYPHRASE, 30000);
-        if (text.equals(""))
-            text = "Organiser tells baker from 3rd Space Cafe in Sheung Wan that the cake featured messages of anti-government protests that were considered ‘offensive’.";
-
+       
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Bundle params = new Bundle();
             params.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, 1.0f);
@@ -739,32 +780,26 @@ public class MainActivity extends AppCompatActivity implements
 
         @Override
         public void onDone(String utteranceId) {
+            if (state == STATE_ADVERTISING) {
+                player.start();
+                return;
+            }
             if (speakTasks.getTaskCount() > 0) {
-                //if (textToSpeech.isSpeaking()) {
-                //textToSpeech.stop();
-                //}
-                if (state.equals(STATE_READING_ALL_NEWS)) {
-                    SpeakerTask task = speakTasks.getTask();
+                SpeakerTask task = speakTasks.getTask();
+                if (advertismentEnable && task.getType().equals("ads")){
+                    speak(task.getText());
+                    previousState = state;
+                    state = STATE_ADVERTISING;
+                } else if (state.equals(STATE_READING_ALL_NEWS)) {
                     if (task.getNewsIndex() != currentNewID | task.getSection() != currentSection) {
                         currentNewID = task.getNewsIndex();
                         currentSection = task.getSection();
-
-                        /**
-                         News[] sectionNews = news.get(currentSection);
-                         Bundle args = new Bundle();
-                         args.putString("state", state);
-                         args.putString("newsTitle", sectionNews[currentNewID ].getTitle());
-                         args.putString("newsContent", sectionNews[currentNewID ].getContent());
-
-                         navController.navigate(utils.getFragmentIDBySection(currentSection), args);
-                         drawer.closeDrawer(Gravity.LEFT);
-                         **/
                         handler.sendEmptyMessage(0);
-                        //Bundle args = new Bundle();
-                        //navController.navigate(utils.getFragmentIDBySection(currentSection), args);
                     }
-                    speak(speakTasks.getTask().getText());
-                } else speak(speakTasks.getTask().getText());
+                    speak(task.getText());
+                } else {
+                    speak(task.getText());
+                }
             } else {
                 if (state ==STATE_SHUTDOWN) {
                     shutDown();
@@ -785,7 +820,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void shutingDown() {
-        addSpeakTask(new SpeakerTask(false, "", -1, "Goodbye, see you tomorrow!"));
+        addSpeakTask(new SpeakerTask("", "", -1, "Goodbye, see you tomorrow!"));
         Log.e("123","adding task");
         state = STATE_SHUTDOWN;
     }

@@ -1,20 +1,20 @@
 package com.example.myapplication;
 
 public class SpeakerTask {
-    private boolean isNews;
+    private String type;
     private String section;
     private int newsIndex;
     private String text;
 
-    public SpeakerTask(boolean isNews, String section, int newsIndex, String text) {
-        this.isNews = isNews;
+    public SpeakerTask(String type, String section, int newsIndex, String text) {
+        this.type = type;
         this.section = section;
         this.newsIndex = newsIndex;
         this.text = text;
     }
 
-    public boolean getIsNews() {
-        return this.isNews;
+    public String getType() {
+        return this.type;
     }
 
     public String getSection() {

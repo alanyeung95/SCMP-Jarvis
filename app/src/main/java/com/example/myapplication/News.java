@@ -38,6 +38,7 @@ public class News {
         };
 
         News[] hongkongNews = new News[]{
+                new News("testing title", "testing content."),
                 new News("Hong Kong’s next chief justice: call to consider non-judges too", "Search panel urged to keep an open mind, look at non-judges who can initiate change, although judge Andrew Cheung is considered front-runner."),
                 new News("Hongkongers hold peaceful vigil for student killed in fall ", "Gathering at Tamar Park, and another near the scene of Chow’s injuries, sombre and subdued compared with recent street clashes. But there are still flashes of anger against police, and calls for revenge."),
         };
