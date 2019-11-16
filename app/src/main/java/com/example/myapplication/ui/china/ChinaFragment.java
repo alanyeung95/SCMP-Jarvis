@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.hongkong;
+package com.example.myapplication.ui.china;
 
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
@@ -9,34 +9,34 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 
-public class HongKongFragment extends Fragment {
+public class ChinaFragment extends Fragment {
 
-    private HongKongViewModel hongKongViewModel;
+    private ChinaViewModel chinaViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        if (hongKongViewModel == null) {
+        Log.e("fragment", "china is coming");
+        if (chinaViewModel == null) {
             Log.e("asdf", "null");
         }
 
-        hongKongViewModel =
-                ViewModelProviders.of(this).get(HongKongViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_hong_kong, container, false);
-        final TextView textView = root.findViewById(R.id.text_hong_kong);
+        chinaViewModel =
+                ViewModelProviders.of(this).get(ChinaViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_china, container, false);
+        final TextView textView = root.findViewById(R.id.text_china);
 
         if (getArguments() != null) {
             if (getArguments().getString("state").equals("STATE_READING_ONE_NEWS") || getArguments().getString("state").equals("STATE_READING_ALL_NEWS")){
-                Log.e("hkong fragment", "creating");
+
                 String text="";
                 text = getArguments().getString("newsTitle"  ) + "\n\n" + getArguments().getString("newsContent" )+ "\n";
                 SpannableStringBuilder str = new SpannableStringBuilder(text);
@@ -58,16 +58,6 @@ public class HongKongFragment extends Fragment {
                 textView.setMovementMethod(new ScrollingMovementMethod());
             }
         }
-            return root;
+        return root;
     }
-/**
-    public static HongKongFragment newInstance(String text) {
-        HongKongFragment hongKongFragment = new HongKongFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString("123", text);
-        //fragment保存参数，传入一个Bundle对象
-        hongKongFragment.setArguments(bundle);
-        return hongKongFragment;
-    }
-**/
 }

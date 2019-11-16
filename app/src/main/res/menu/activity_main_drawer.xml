@@ -6,16 +6,36 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_menu_send"
             android:title="@string/menu_home" />
         <item
             android:id="@+id/nav_hong_kong"
-            android:icon="@drawable/ic_menu_hong_kong"
+            android:icon="@drawable/ic_menu_send"
             android:title="@string/menu_hong_kong" />
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/menu_gallery" />
+            android:id="@+id/nav_china"
+            android:icon="@drawable/ic_menu_send"
+            android:title="@string/menu_china" />
+        <item
+            android:id="@+id/nav_asia"
+            android:icon="@drawable/ic_menu_send"
+            android:title="@string/menu_asia" />
+        <item
+            android:id="@+id/nav_world"
+            android:icon="@drawable/ic_menu_send"
+            android:title="@string/menu_world" />
+        <item
+            android:id="@+id/nav_business"
+            android:icon="@drawable/ic_menu_send"
+            android:title="@string/menu_business" />
+        <item
+            android:id="@+id/nav_economy"
+            android:icon="@drawable/ic_menu_send"
+            android:title="@string/menu_economy" />
+        <item
+            android:id="@+id/nav_tech"
+            android:icon="@drawable/ic_menu_send"
+            android:title="@string/menu_tech" />
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"

@@ -23,10 +23,40 @@
     </fragment>
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.example.myapplication.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_china"
+        android:name="com.example.myapplication.ui.china.ChinaFragment"
+        android:label="@string/menu_china"
+        tools:layout="@layout/fragment_china" />
+
+    <fragment
+        android:id="@+id/nav_asia"
+        android:name="com.example.myapplication.ui.asia.AsiaFragment"
+        android:label="@string/menu_asia"
+        tools:layout="@layout/fragment_asia" />
+
+    <fragment
+        android:id="@+id/nav_world"
+        android:name="com.example.myapplication.ui.world.WorldFragment"
+        android:label="@string/menu_world"
+        tools:layout="@layout/fragment_world" />
+
+    <fragment
+        android:id="@+id/nav_business"
+        android:name="com.example.myapplication.ui.business.BusinessFragment"
+        android:label="@string/menu_business"
+        tools:layout="@layout/fragment_business" />
+
+    <fragment
+        android:id="@+id/nav_economy"
+        android:name="com.example.myapplication.ui.economy.EconomyFragment"
+        android:label="@string/menu_economy"
+        tools:layout="@layout/fragment_economy" />
+
+    <fragment
+        android:id="@+id/nav_tech"
+        android:name="com.example.myapplication.ui.tech.TechFragment"
+        android:label="@string/menu_tech"
+        tools:layout="@layout/fragment_tech" />
 
     <fragment
         android:id="@+id/nav_slideshow"

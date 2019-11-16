@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.home;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,19 +18,31 @@ import com.example.myapplication.R;
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
+    View root;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel =
                 ViewModelProviders.of(this).get(HomeViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_home, container, false);
+         root = inflater.inflate(R.layout.fragment_home, container, false);
         final TextView textView = root.findViewById(R.id.text_home);
         homeViewModel.getText().observe(this, new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
-                textView.setText("Say \"Jarvis\" to start!");
+                textView.setText("Speak \"Jarvis\" to start!");
             }
         });
+
+        if (getArguments() != null) {
+            textView.setText(getArguments().getString("msg"));
+        }
+        Log.e("tag", "oncreate view");
         return root;
+    }
+
+    public void updateTextView(){
+        Log.e("tag", "update view");
+        TextView textView = root.findViewById(R.id.text_home);
+        textView.setText("foo");
     }
 }

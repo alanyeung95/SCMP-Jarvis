@@ -38,9 +38,8 @@ public class News {
         };
 
         News[] hongkongNews = new News[]{
-                new News("testing title", "testing content."),
-                new News("Hong Kong’s next chief justice: call to consider non-judges too", "Search panel urged to keep an open mind, look at non-judges who can initiate change, although judge Andrew Cheung is considered front-runner."),
-                new News("Hongkongers hold peaceful vigil for student killed in fall ", "Gathering at Tamar Park, and another near the scene of Chow’s injuries, sombre and subdued compared with recent street clashes. But there are still flashes of anger against police, and calls for revenge."),
+                new News("Thousands take advantage of free ferry to escape Tai Po ", "Home Affairs Department lays on service to take people from Tai Po to Wu Kai Sha after protests left town cut off and residents stranded."),
+                new News("PLA soldiers sent onto Hong Kong streets for first time since protests began ", "One soldier says action has nothing to do with the Hong Kong government. More than 400 soldiers were deployed just over a year ago to help clear-up operation following Typhoon Mangkhut"),
         };
 
         News[] techNews = new News[]{
