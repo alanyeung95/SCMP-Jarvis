@@ -1,78 +1,50 @@
 package com.example.myapplication;
 
-import android.app.ActionBar;
+import android.Manifest;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
+import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-
-import com.example.myapplication.ui.home.HomeFragment;
-import com.example.myapplication.ui.home.HomeViewModel;
-import com.example.myapplication.ui.hongkong.HongKongFragment;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
 import android.os.Handler;
 import android.os.Message;
-import android.speech.tts.Voice;
-import android.view.Gravity;
-import android.view.View;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.lifecycle.Observer;
-import androidx.navigation.NavController;
-import androidx.navigation.NavGraph;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-
-import com.google.android.material.navigation.NavigationView;
-
-import androidx.drawerlayout.widget.DrawerLayout;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
-import android.view.Menu;
-
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-
-import android.Manifest;
-import android.content.pm.PackageManager;
-
-import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-import androidx.navigation.NavDestination;
+import androidx.core.content.ContextCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
-import android.view.MenuItem;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Queue;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Locale;
 
 import edu.cmu.pocketsphinx.Assets;
-import edu.cmu.pocketsphinx.SpeechRecognizer;
 import edu.cmu.pocketsphinx.Hypothesis;
 import edu.cmu.pocketsphinx.RecognitionListener;
+import edu.cmu.pocketsphinx.SpeechRecognizer;
 import edu.cmu.pocketsphinx.SpeechRecognizerSetup;
-
-import android.os.AsyncTask;
-import android.util.Log;
 
 
 public class MainActivity extends AppCompatActivity implements
@@ -178,29 +150,6 @@ public class MainActivity extends AppCompatActivity implements
                     switchSearch(SECTION_SEARCH);
                 } else if (state == STATE_READING_ONE_NEWS | state == STATE_WAITING_ARTICLE)
                     switchSearch(ARTICLE_SEARCH);
-
-                /**
-                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                 .setAction("Action", null).show();
-                 **/
-
-                /**
-                 addSpeakTask("Yes sir");
-                 state = STATE_WAITING;
-                 drawer.openDrawer(Gravity.LEFT );
-                 **/
-                // navigationView.getMenu().getItem(0).setChecked(true);
-                // navController.navigate(R.id.nav_hong_kong);
-
-                // TextView textView = findViewById(R.id.text_hong_kong);
-                // if (textView!=null ) textView.setText("S123123");
-
-                //getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, HongKongFragment.newInstance("123")).commit();
-                //if (player != null) {
-                //   player.start();
-                //}
-
-
             }
         });
 
@@ -223,17 +172,6 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
                 selectNavigationBar(item.getItemId());
-                /**
-                 News[] sectionNews = news.get(getSectionByFragmentID(item.getItemId()));
-                 Bundle args = new Bundle();
-                 args.putInt("newsLength", sectionNews.length);
-                 for (int i = 0; i < sectionNews.length; i++) {
-                 args.putString("newsTitle" + i, sectionNews[i].getTitle());
-                 args.putString("newsContent" + i, sectionNews[i].getContent());
-                 }
-                 navController.navigate(item.getItemId(), args);
-                 drawer.closeDrawer(Gravity.LEFT);
-                 */
                 return true;
             }
         });
@@ -321,10 +259,7 @@ public class MainActivity extends AppCompatActivity implements
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
-
 
     // ========================================================== Start Text2Speak ==========================================================
     @Override
@@ -344,10 +279,7 @@ public class MainActivity extends AppCompatActivity implements
 
         // If we are not spotting, start listening with timeout (10000 ms or 10 seconds).
         if (searchName.equals(KWS_SEARCH)) {
-            Log.e("TTS", "jarvis here");
-
-            // if (homeTextView != null) homeTextView.setText("Say \"Jarvis\" to start!");
-
+            //Log.e("TTS", "jarvis");
             recognizer.startListening(searchName);
         } else
             recognizer.startListening(searchName, 10000);
@@ -361,7 +293,6 @@ public class MainActivity extends AppCompatActivity implements
             return;
 
         String text = hypothesis.getHypstr();
-
 
         // filter other useless words
         if (text.contains(KEYPHRASE)) {
@@ -392,12 +323,10 @@ public class MainActivity extends AppCompatActivity implements
             text = "three";
         }
 
-
         if (text.contains("bye")) {
-            Log.e("qwer", "good bye");
+            // goodbye jarvis
             shutingDown();
         }
-
 
         if (text.contains(KEYPHRASE)) {
             recognizer.stop();
@@ -463,28 +392,17 @@ public class MainActivity extends AppCompatActivity implements
                 addSpeakTask(new SpeakerTask("", currentSection, i, "Content"));
                 addSpeakTask(new SpeakerTask("news", currentSection, i, news.get(currentSection)[i].getContent()));
             }
-
-        } else if (text.equals(PHONE_SEARCH)) {
-            Log.e("TTS", "time to phone");
-            switchSearch(MENU_SEARCH);
-            // switchSearch(PHONE_SEARCH);
-        } else if (text.equals(DIGITS_SEARCH))
-
-            switchSearch(DIGITS_SEARCH);
-        else if (text.equals(FORECAST_SEARCH))
-
-            switchSearch(FORECAST_SEARCH);
+        }
         else {
             switchSearch(ARTICLE_SEARCH);
             Log.e("TTS", text);
         }
 
-        Log.e("TTS", "hypothesis: " + text);
-
+        //Log.e("TTS", "hypothesis: " + text);
     }
     // ========================================================== End Text2Speak ==========================================================
 
-    // ========================================================== Start Business Logic ==========================================================
+    // ========================================================== Start Business  ==========================================================
     void handleSection(String section) {
         if (section.equals("")) return;
         currentSection = section;
@@ -498,19 +416,16 @@ public class MainActivity extends AppCompatActivity implements
 
         addSpeakTask(new SpeakerTask("", section, -1, "There are " + sectionNews.length + " news in " + section + " section. "));
 
-        //String newsString = "";
         for (int i = 0; i < sectionNews.length && i < 3; i++) {
-            //newsString = newsString + "News " + String.valueOf(i + 1) + " title is" + sectionNews[i].getTitle() + " ";
             addSpeakTask(new SpeakerTask("", section, -1, "News " + String.valueOf(i + 1) + " title"));
             addSpeakTask(new SpeakerTask("", section, -1, sectionNews[i].getTitle()));
         }
 
         addSpeakTask(new SpeakerTask("", section, -1, "Which one you want me to read?"));
 
-        // speak("There are " + sectionNews.length + " news in " + section + " section. Which one you want me to read?");
     }
 
-    // ========================================================== End Business Logic ==========================================================
+    // ========================================================== End Business  ==========================================================
     public void selectNavigationBar(int destID) {
         News[] sectionNews = news.get(utils.getSectionByFragmentID(destID));
         Bundle args = new Bundle();
@@ -571,7 +486,6 @@ public class MainActivity extends AppCompatActivity implements
         // Create keyword-activation search.
         recognizer.addKeyphraseSearch(KWS_SEARCH, KEYPHRASE);
 
-
         // Create grammar-based search for selection between demos
         File menuGrammar = new File(assetsDir, "menu.gram");
         recognizer.addGrammarSearch(MENU_SEARCH, menuGrammar);
@@ -582,24 +496,11 @@ public class MainActivity extends AppCompatActivity implements
 
         File sectionGrammar = new File(assetsDir, "section.gram");
         recognizer.addGrammarSearch(SECTION_SEARCH, sectionGrammar);
-
-        // Create language model search
-        File languageModel = new File(assetsDir, "weather.dmp");
-        recognizer.addNgramSearch(FORECAST_SEARCH, languageModel);
-
-        // Phonetic search
-        File phoneticModel = new File(assetsDir, "en-phone.dmp");
-        recognizer.addAllphoneSearch(PHONE_SEARCH, phoneticModel);
-
-        //File articleModel = new File(assetsDir, "article.gram");
-        //recognizer.addAllphoneSearch(ARTICLE_SEARCH, articleModel);
-
-
     }
 
     @Override
     public void onResult(Hypothesis hypothesis) {
-        Log.e("TTS", "final result");
+        //Log.e("TTS", "final result");
 
         if (hypothesis != null) {
             String text = hypothesis.getHypstr();
@@ -663,7 +564,6 @@ public class MainActivity extends AppCompatActivity implements
                     text = "three";
                 }
 
-                //switchSearch(KWS_SEARCH );
                 if (currentSection == null) {
                     return;
                 }
@@ -724,14 +624,21 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            //Toast.makeText(this, "設定", Toast.LENGTH_SHORT).show();
-            Log.e("ads", "123123");
+            // demo items
             return true;
         } else if (id == R.id.turn_on_ads_settings) {
             advertismentEnable = true;
             return true;
         } else if (id == R.id.turn_off_ads_settings) {
             advertismentEnable = false;
+            return true;
+        } else if (id == R.id.demo_ads) {
+            recognizer.stop();
+            previousState = state;
+            state = STATE_ADVERTISING;
+            advertismentEnable = true;
+            advertismentCount = advertismentQuota;
+            addSpeakTask(new SpeakerTask("ads", currentSection, currentNewID, "You have reached the free quota limit, now playing the promotion audio to earn free quota"));
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -768,8 +675,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void speak(String text) {
-        //recognizer.startListening(KEYPHRASE, 30000);
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Bundle params = new Bundle();
             params.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, 1.0f);
@@ -833,7 +738,6 @@ public class MainActivity extends AppCompatActivity implements
 
     public void shutingDown() {
         addSpeakTask(new SpeakerTask("", "", -1, "Goodbye, see you tomorrow!"));
-        Log.e("123", "adding task");
         state = STATE_SHUTDOWN;
     }
 
@@ -859,9 +763,8 @@ public class MainActivity extends AppCompatActivity implements
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 finishAndRemoveTask();
             }
-
         } else {
-            Log.e("asdf", "caannot lock");
+            Log.e("lock screen", "caannot lock");
         }
     }
 }

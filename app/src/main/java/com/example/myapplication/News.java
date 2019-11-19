@@ -1,10 +1,6 @@
 package com.example.myapplication;
 
-import android.util.Pair;
-
 import java.util.HashMap;
-import java.util.LinkedList;
-
 
 public class News {
     private String title;
@@ -51,16 +47,8 @@ public class News {
         map.put("hong kong", hongkongNews);
         map.put("china", chinaNews);
         map.put("technology", techNews);
-
         return map;
     }
 
-    // yes sir -> hong kong, headline
-    // STATE_HELP , ask section list, ask headline list -> ask section, headline
-    // (currentSection) STATE_ASK_NEWS  which news -> 1,2,3, all, hong headline
-    // STATE_READING_ONE_NEWS title, content -> next, previous, section
-    // STATE_READING_BATCH_NEWS -> (continue)
-    // STATE_SETTING
-    // STATE_PLAYING_ADV -> (continue)
 }
 

@@ -38,8 +38,8 @@
             android:title="@string/menu_tech" />
         <item
             android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_slideshow" />
+            android:icon="@drawable/ic_menu_send"
+            android:title="@string/menu_sport" />
         <item
             android:id="@+id/nav_tools"
             android:icon="@drawable/ic_menu_manage"

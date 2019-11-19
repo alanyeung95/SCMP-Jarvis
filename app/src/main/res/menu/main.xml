@@ -16,4 +16,9 @@
         android:orderInCategory="100"
         android:title="@string/turn_off_ads_settings"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/demo_ads"
+        android:orderInCategory="100"
+        android:title="@string/demo_ads"
+        app:showAsAction="never" />
 </menu>
