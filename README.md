@@ -8,4 +8,8 @@
 4. Text version also provided
 5. Could be the improvement of the existing SCMP app
 
-## Demo video link: https://youtu.be/C8T_X1L11NU 
+## Demo video link: 
+https://youtu.be/C8T_X1L11NU 
+
+## Slides to introduce SCMP-Jarvis 
+https://github.com/alanyeung95/SCMP-Jarvis/blob/master/Team_18_SCMP_Jarvis.pdf
